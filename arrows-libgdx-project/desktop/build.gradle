@@ -1,0 +1,22 @@
+plugins {
+    id 'java-library'
+    id 'kotlin'
+    id 'application'
+}
+
+dependencies {
+    implementation project(":core")
+    
+    def gdxVersion = '1.12.0'
+    implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    implementation "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
+}
+
+application {
+    mainClassName = 'com.arrows.game.DesktopLauncherKt'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}

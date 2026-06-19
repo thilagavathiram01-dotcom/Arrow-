@@ -1,0 +1,96 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:8.4.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.0"
+    }
+}
+
+plugins {
+    id 'java-library'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.0'
+}
+
+def gdxVersion = '1.12.0'
+def kotlin_version = '1.9.0'
+
+allprojects {
+    version = '1.0.0'
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+    ext {
+        appName = "Arrows"
+        gdxVersion = '1.12.0'
+    }
+}
+
+project(':core') {
+    apply plugin: "java-library"
+    apply plugin: "kotlin"
+
+    dependencies {
+        // LibGDX Core
+        api "com.badlogicgames.gdx:gdx:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+        
+        // Kotlin
+        api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+        api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0"
+        
+        // Tweening library (commented out - not available in public repos)
+        // api "com.github.libgdx:gdx-tween:v0.0.1"
+    }
+}
+
+project(':desktop') {
+    apply plugin: "java-library"
+    apply plugin: "kotlin"
+
+    dependencies {
+        api project(":core")
+        api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
+    }
+}
+
+project(':android') {
+    apply plugin: "com.android.application"
+    apply plugin: "kotlin-android"
+
+    android {
+        compileSdkVersion 34
+        ndkVersion "25.1.8937393"
+        
+        defaultConfig {
+            applicationId "com.arrows.game"
+            minSdkVersion 21
+            targetSdkVersion 34
+            versionCode 1
+            versionName "1.0"
+        }
+
+        packagingOptions {
+            exclude 'META-INF/robovm.xml'
+        }
+    }
+
+    dependencies {
+        api project(":core")
+        api "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
+        api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
+        api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-armeabi-v7a"
+        api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-arm64-v8a"
+    }
+}
+
+wrapper {
+    gradleVersion = '8.0'
+}
